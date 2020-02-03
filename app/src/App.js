@@ -10,6 +10,26 @@ const Svg = styled.svg`
   background: #0b0c10;
 `;
 
+const Year = styled.text`
+fill: white;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+font-size: 120px;
+font-weight: bold;
+text-anchor: end;
+`;
+
+const Title = styled.text`
+fill: white;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+font-size: 36px;
+font-weight: bold;
+text-anchor: middle;
+`;
+
 const useData = () => {
   const [data, setData] = useState(null);
 
@@ -60,9 +80,11 @@ function App() {
 
   return (
     <Svg>
+      <Title x={"50%"} y={35}> COUNT IN REACT</Title>
       {data ? (
         <Barchart data={data[yearIndex(currentYear)]} x={100} y={50} barThickness={20} width={500} />
       ) : null}
+      <Year x={"95%"} y={"95%"} >{currentYear}</Year>
     </Svg>
   );
 }
