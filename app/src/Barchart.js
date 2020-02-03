@@ -12,6 +12,15 @@ const Label = styled.text`
   text-anchor: end;
   alignment-baseline: middle;
 `;
+const EndLabel = styled.text`
+  fill: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  text-anchor: start;
+  alignment-baseline: middle;
+`;
 
 const useTransition = ( {targetValue, name, startValue }) => {
   const [renderValue, setRenderValue] = useState(startValue || targetValue);
@@ -53,6 +62,7 @@ const Bar = ({ data, y, width, thickness }) => {
     <g transform={`translate(${renderX}, ${renderY})`}>
       <rect x={10} y={0} width={renderWidth} height={thickness} fill="white" />
       <Label y={thickness / 2}>{data.name}</Label>
+      <EndLabel y={thickness / 2} x= {renderWidth + 15}>{data.transistors}</EndLabel>
     </g>
   );
 };
