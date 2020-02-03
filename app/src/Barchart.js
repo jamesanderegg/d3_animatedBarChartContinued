@@ -45,7 +45,7 @@ const Barchart = ({ data, x, y, barThickness, width }) => {
   //create scale for vertical alignment
   const yScale = d3
     .scaleBand()
-    .domain(data.map(d => d.name))
+    .domain( d3.range(0, data.length))
     .paddingInner(0.2)
     .range([data.length * barThickness, 0]);
 
@@ -56,11 +56,11 @@ const Barchart = ({ data, x, y, barThickness, width }) => {
 
   return (
     <g transform={`translate(${x}, ${y})`}>
-      {data.map(d => (
+      {data.sort((a, b) => a.transistors - b.transistors ).map((d, index) => (
         <Bar
           data={d}
           key={d.name}
-          y={yScale(d.name)}
+          y={yScale(index)}
           width={xScale(d.transistors)}
           thickness={yScale.bandwidth()}
         />
