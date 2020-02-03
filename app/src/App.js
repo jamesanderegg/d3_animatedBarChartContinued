@@ -14,15 +14,21 @@ const useData = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    const processors = d3.range(5).map(i => `${i} CPU`),
+    const processors = d3.range(10).map(i => `${i} CPU`),
       random = d3.randomUniform(1000, 50000);
 
-    const data = d3.range(1970, 2025).map(year =>
-      d3.range(5).map(i => ({
-        year: year,
-        name: processors[i],
-        transistors: Math.round(random())
-      }))
+    let N = 1;
+
+    const data = d3.range(1970, 2025).map(year => {
+      if(year % 5 ===0 && N < 10 ){
+        N += 1;
+      }
+      return d3.range(N).map(i => ({
+      year: year,
+      name: processors[i],
+      transistors: Math.round(random())
+    }))}
+      
     );
 
     setData(data);
@@ -47,7 +53,7 @@ function App() {
         }
         return year + 1;
       });
-    }, 3000);
+    }, 2000);
 
     return () => interval.stop();
   }, []);
