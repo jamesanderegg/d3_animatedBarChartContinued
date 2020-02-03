@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 import styled from "styled-components";
 
+
 const Label = styled.text`
   fill: white;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
@@ -12,8 +13,8 @@ const Label = styled.text`
   alignment-baseline: middle;
 `;
 
-const useTransition = ( targetValue, name) => {
-  const [renderValue, setRenderValue] = useState(targetValue);
+const useTransition = ( {targetValue, name, startValue }) => {
+  const [renderValue, setRenderValue] = useState(startValue || targetValue);
 
   useEffect(() => {
       d3.selection()
@@ -30,11 +31,26 @@ const useTransition = ( targetValue, name) => {
 };
 
 const Bar = ({ data, y, width, thickness }) => {
-  const renderWidth = useTransition( width, `width-${data.name}`);
-  const renderY = useTransition(y, `y-${data.name}`);
+  const renderWidth = useTransition({ 
+    targetValue: width,
+    name: `width-${data.name}`});
+  const renderY = useTransition({
+    targetValue: y,
+    name: `y-${data.name}`,
+    startValue: -500,
+    easing:d3.easeCubicInOut
+  });
+  const renderX = useTransition({
+      targetValue: 0, 
+      name: `x-${data.name}`,
+      startValue: 1000,
+      easing:d3.easeCubicInOut
+  });
+  
+ 
 
   return (
-    <g transform={`translate(${0}, ${renderY})`}>
+    <g transform={`translate(${renderX}, ${renderY})`}>
       <rect x={10} y={0} width={renderWidth} height={thickness} fill="white" />
       <Label y={thickness / 2}>{data.name}</Label>
     </g>
