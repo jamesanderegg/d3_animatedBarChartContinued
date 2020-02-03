@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import * as d3 from "d3";
 import styled from "styled-components";
 
@@ -39,7 +39,7 @@ const useTransition = ( {targetValue, name, startValue }) => {
     return renderValue;
 };
 
-const Bar = ({ data, y, width, thickness }) => {
+const Bar = ({ data, y, width, thickness, endLabel }) => {
   const renderWidth = useTransition({ 
     targetValue: width,
     name: `width-${data.name}`});
@@ -62,23 +62,27 @@ const Bar = ({ data, y, width, thickness }) => {
     <g transform={`translate(${renderX}, ${renderY})`}>
       <rect x={10} y={0} width={renderWidth} height={thickness} fill="white" />
       <Label y={thickness / 2}>{data.name}</Label>
-      <EndLabel y={thickness / 2} x= {renderWidth + 15}>{data.transistors}</EndLabel>
+      <EndLabel y={thickness / 2} x= {renderWidth + 15}>{ endLabel }</EndLabel>
     </g>
   );
 };
 //draws for single year
 const Barchart = ({ data, x, y, barThickness, width }) => {
   //create scale for vertical alignment
-  const yScale = d3
+  const yScale = useMemo(() => d3
     .scaleBand()
     .domain( d3.range(0, data.length))
     .paddingInner(0.2)
-    .range([data.length * barThickness, 0]);
+    .range([data.length * barThickness, 0]),
+  [data.length, barThickness]
+  );
 
   const xScale = d3
     .scaleLinear()
     .domain([0, d3.max(data, d => d.transistors)])
     .range([0, width]);
+
+  const formatter = xScale.tickFormat()
 
   return (
     <g transform={`translate(${x}, ${y})`}>
@@ -88,6 +92,7 @@ const Barchart = ({ data, x, y, barThickness, width }) => {
           key={d.name}
           y={yScale(index)}
           width={xScale(d.transistors)}
+          endLabel={formatter(d.transistors)}
           thickness={yScale.bandwidth()}
         />
       ))}
