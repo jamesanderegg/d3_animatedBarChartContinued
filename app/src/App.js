@@ -30,26 +30,40 @@ font-weight: bold;
 text-anchor: middle;
 `;
 
+const getYear = row =>
+  Number(row['Date of introduction']
+    .replace(/\[.*\]/g, ''));
+
+const getName = (row,type) => `${row['Processor']
+  .replace(/\(.*\)/,'')} - ${type}`;
+
+const getTransistors= row => Number(
+  row['MOS transistor count']
+  .replace(/\[.*\]/g,'')
+  .replace(/[^0-9]/g, "")
+)  
 const useData = () => {
   const [data, setData] = useState(null);
+
 
   useEffect(function(){
   (async () => {
     const datas = await Promise.all([
-      d3.csv('data/microprocessors.csv', row => {
-        const year =Number(
-          row['Date of introduction'].replace(/\[.*\]/g, ''))
-        return {
-          name: `${row['Processor'].replace(/\(.*\)/,'')} - ${year}`,
+      d3.csv('data/microprocessors.csv', row => ({
+          name: getName(row, 'CPU'),
           designer: row['Designer'],
-          year: year,
-          transistors: Number(
-            row['MOS transistor count']
-            .replace(/\[.*\]/g,'')
-            .replace(/[^0-9]/g, "")
-            )
-      };
-    })
+          year: getYear(row),
+          transistors: getTransistors(row),
+          type: 'CPU',
+    })),
+    d3.csv('data/gpus.csv', row => ({    
+        name: getName(row, 'GPU'),
+        designer: row['Designer'],
+        year: getYear(row),
+        transistors: getTransistors(row),
+        type: 'GPU'
+
+      }))
   ]);
 
     //group by year and accumulate everything from previous years
