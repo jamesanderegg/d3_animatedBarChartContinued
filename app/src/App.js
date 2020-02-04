@@ -124,9 +124,10 @@ function App() {
   return (
     <Svg>
       <Title x={"50%"} y={35}> COUNT IN REACT</Title>
-      {data && data[currentYear] ? (
+       (
         <Barchart 
-          data={[...data[currentYear],{       
+          data={[
+            ...((data && data[currentYear]) || []),{       
             name: 'Moores\'s law',
             designer: "Moore",
             year: currentYear,
@@ -137,7 +138,7 @@ function App() {
           y={50} 
           barThickness={20} 
           width={500} />
-      ) : null}
+      
       <Year x={"95%"} y={"95%"} >{currentYear}</Year>
     </Svg>
   );

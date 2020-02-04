@@ -69,7 +69,8 @@ const Bar = ({ data, y, width, thickness, formatter, color }) => {
       <rect x={10} y={0} width={renderWidth} height={thickness} fill={color} />
       <Label y={thickness / 2}>{data.name}</Label>
       <EndLabel y={thickness / 2} x= {renderWidth + 15}>
-        { data.designer === "Moore" ? Math.round(transistors) 
+        { data.designer === "Moore"
+        ? formatter(Math.round(transistors)) 
         : formatter(data.transistors) }
       </EndLabel>
     </g>
