@@ -90,7 +90,22 @@ const useData = () => {
 function App() {
   const data = useData();
   const [currentYear, setCurrentYear] = useState(1970);
-  
+
+    // SIMPLE moore's Law:
+  const mooresLaw = d3
+    .range(1971, 2025)
+    .reduce(
+      (law,year) => {
+      if(year % 2 === 0){
+        const count =  law[year-2]*2;
+        const delta = count -law[year-2];
+        law[year-1] = law[year-2] + delta/2;
+        law[year] = count;
+      }
+      return law;   
+    }, 
+    {1970: 1000}
+  );
   //main animation a simple counter
   useEffect(() => {
     const interval = d3.interval(() => {
@@ -111,7 +126,13 @@ function App() {
       <Title x={"50%"} y={35}> COUNT IN REACT</Title>
       {data && data[currentYear] ? (
         <Barchart 
-          data={data[currentYear]} 
+          data={[...data[currentYear],{       
+            name: 'Moores\'s law',
+            designer: "Moore",
+            year: currentYear,
+            type: '',
+            transistors: mooresLaw[currentYear]  
+          }]} 
           x={150} 
           y={50} 
           barThickness={20} 
