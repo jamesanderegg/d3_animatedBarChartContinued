@@ -39,10 +39,12 @@ const useTransition = ( {targetValue, name, startValue }) => {
     return renderValue;
 };
 
-const Bar = ({ data, y, width, thickness, endLabel, color }) => {
+const Bar = ({ data, y, width, thickness, formatter, color }) => {
   const renderWidth = useTransition({ 
     targetValue: width,
-    name: `width-${data.name}`});
+    name: `width-${data.name}`,
+    easing: data.designer === "Moore" ? d3.easeLinear : d3.easeCubicInOut
+  });
   const renderY = useTransition({
     targetValue: y,
     name: `y-${data.name}`,
@@ -56,13 +58,20 @@ const Bar = ({ data, y, width, thickness, endLabel, color }) => {
       easing:d3.easeCubicInOut
   });
   
- 
+  const transistors = useTransition({
+    targetValue: data.transistors,
+    name: `trans-${data.name}`,
+    easing: d3.easeLinear
+  })
 
   return (
     <g transform={`translate(${renderX}, ${renderY})`}>
       <rect x={10} y={0} width={renderWidth} height={thickness} fill={color} />
       <Label y={thickness / 2}>{data.name}</Label>
-      <EndLabel y={thickness / 2} x= {renderWidth + 15}>{ endLabel }</EndLabel>
+      <EndLabel y={thickness / 2} x= {renderWidth + 15}>
+        { data.designer === "Moore" ? Math.round(transistors) 
+        : formatter(data.transistors) }
+      </EndLabel>
     </g>
   );
 };
@@ -81,11 +90,11 @@ const Barchart = ({ data, x, y, barThickness, width }) => {
     .scaleOrdinal()
     .domain(["AMD", "ARM", "Apple", "Fujitsu", "Hitachi", 
     "Huawei", "IBM", "Intel", "Microsoft/Amd", 
-    "Motorola", "NEC", "Nvidia", "Oracle", "Samsung", "Sun/Oracle", "Toshiba"])
+    "Motorola", "NEC", "Nvidia", "Oracle", "Samsung", "Sun/Oracle", "Toshiba","Moore"])
     .range([
       '#009A66','#0091BD','#A3AAAE', '#d30909', '#F4ABAA',
       '#FA0505', '#1F70C1','#0171C5','#7FBA02',
-      '#008DD2','#14149F','#77B900', '#F70000', '#034EA1','#7F7F7F','#FF0000'
+      '#008DD2','#14149F','#77B900', '#F70000', '#034EA1','#7F7F7F','#FF0000','#D92AAD'
     ]))
 
   const xScale = d3
@@ -103,7 +112,7 @@ const Barchart = ({ data, x, y, barThickness, width }) => {
           key={d.name}
           y={yScale(index)}
           width={xScale(d.transistors)}
-          endLabel={formatter(d.transistors)}
+          formatter={formatter}
           thickness={yScale.bandwidth()}
           color={color(d.designer) || 'white'}
         />
