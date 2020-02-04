@@ -36,17 +36,21 @@ const useData = () => {
   useEffect(function(){
   (async () => {
     const datas = await Promise.all([
-      d3.csv('data/microprocessors.csv', row => ({
-        name: row['Processor'].replace(/\(.*\)/,''),
-        designer: row['Designer'],
-        year: Number(row['Date of introduction'].replace(/\[.*\]/g, '')),
-        transistors: Number(
-          row['MOS transistor count']
-          .replace(/\[.*\]/g,'')
-          .replace(/[^0-9]/g, "")
-          )
-      }))
-    ]);
+      d3.csv('data/microprocessors.csv', row => {
+        const year =Number(
+          row['Date of introduction'].replace(/\[.*\]/g, ''))
+        return {
+          name: `${row['Processor'].replace(/\(.*\)/,'')} - ${year}`,
+          designer: row['Designer'],
+          year: year,
+          transistors: Number(
+            row['MOS transistor count']
+            .replace(/\[.*\]/g,'')
+            .replace(/[^0-9]/g, "")
+            )
+      };
+    })
+  ]);
 
     //group by year and accumulate everything from previous years
     const grouped = datas
@@ -94,7 +98,7 @@ function App() {
       {data && data[currentYear] ? (
         <Barchart 
           data={data[currentYear]} 
-          x={100} 
+          x={150} 
           y={50} 
           barThickness={20} 
           width={500} />
