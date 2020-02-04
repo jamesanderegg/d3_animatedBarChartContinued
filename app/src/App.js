@@ -39,20 +39,18 @@ const useData = () => {
       d3.csv('data/microprocessors.csv', row => ({
         name: row['Processor'].replace(/\(.*\)/,''),
         designer: row['Designer'],
-        year: Number(row['Date of introduction'].replace(/\[.*\]/, '')),
+        year: Number(row['Date of introduction'].replace(/\[.*\]/g, '')),
         transistors: Number(
           row['MOS transistor count']
           .replace(/\[.*\]/g,'')
-          .replace(/,/g,'')
+          .replace(/[^0-9]/g, "")
           )
       }))
     ]);
-    
-    // const grouped = d3.nest().key(d => d.year)
-    //   .sortKeys(d3.ascending)
-    //   .entries(datas.flat());
 
-    const grouped = datas.flat()
+    //group by year and accumulate everything from previous years
+    const grouped = datas
+      .flat()
       .sort((a, b) => a.year - b.year)
       .reduce((groups, el) => {
       if(!groups[el.year]){
@@ -64,25 +62,8 @@ const useData = () => {
       return groups;
     }, {})
 
-    console.log(grouped)
-    // const processors = d3.range(10).map(i => `${i} CPU`),
-    //   random = d3.randomUniform(1000, 50000);
+    setData(grouped);
 
-    // let N = 1;
-
-    // const data = d3.range(1970, 2025).map(year => {
-    //   if(year % 5 ===0 && N < 10 ){
-    //     N += 1;
-    //   }
-    //   return d3.range(N).map(i => ({
-    //   year: year,
-    //   name: processors[i],
-    //   transistors: Math.round(random())
-    // }))}
-      
-    // );
-
-    // setData(data);
   })();
 }, []);
 
@@ -91,31 +72,28 @@ const useData = () => {
 function App() {
   const data = useData();
   const [currentYear, setCurrentYear] = useState(1970);
-
-  const yearIndex = d3
-    .scaleOrdinal()
-    .domain(d3.range(1970, 2025))
-    .range(d3.range(0, 2025-1970));
+  
   //main animation a simple counter
   useEffect(() => {
     const interval = d3.interval(() => {
       setCurrentYear(year => {
-        if(year +1 > 2025){
+        if(!data[year +1]){
           interval.stop();
+          return year;
         }
         return year + 1;
       });
     }, 2000);
 
     return () => interval.stop();
-  }, []);
+  }, [data]);
 
   return (
     <Svg>
       <Title x={"50%"} y={35}> COUNT IN REACT</Title>
-      {data ? (
+      {data && data[currentYear] ? (
         <Barchart 
-          data={data[yearIndex(currentYear)].values} 
+          data={data[currentYear]} 
           x={100} 
           y={50} 
           barThickness={20} 
