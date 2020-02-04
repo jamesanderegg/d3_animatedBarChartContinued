@@ -67,11 +67,14 @@ const useData = () => {
   ]);
 
     //group by year and accumulate everything from previous years
+    //groups = year
+    //el = names, designers, transistors
     const grouped = datas
       .flat()
       .sort((a, b) => a.year - b.year)
       .reduce((groups, el) => {
       if(!groups[el.year]){
+        
         const previous = groups[el.year - 1];
         groups[el.year] = previous || [];
       }
@@ -123,13 +126,13 @@ function App() {
 
   return (
     <Svg>
-      <Title x={"50%"} y={35}> COUNT IN REACT</Title>
+      <Title x={"50%"} y={35}> Moore's law vs. actual transistor count in React & D3</Title>
        (
         <Barchart 
           data={[
             ...((data && data[currentYear]) || []),{       
-            name: 'Moores\'s law',
-            designer: "Moore",
+            name: "Moores's law",
+            designer: 'Moore',
             year: currentYear,
             type: '',
             transistors: mooresLaw[currentYear]  

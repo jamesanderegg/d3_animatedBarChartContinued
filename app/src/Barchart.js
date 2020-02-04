@@ -22,13 +22,14 @@ const EndLabel = styled.text`
   alignment-baseline: middle;
 `;
 
-const useTransition = ( {targetValue, name, startValue }) => {
+const useTransition = ( {targetValue, name, startValue, easing }) => {
   const [renderValue, setRenderValue] = useState(startValue || targetValue);
 
   useEffect(() => {
       d3.selection()
           .transition(name)
           .duration(2000)
+          .ease(easing || d3.easeLinear )
           .tween(name, ()=>{
               const interpolate = d3.interpolate(renderValue, targetValue);
               return t => setRenderValue(interpolate(t));
