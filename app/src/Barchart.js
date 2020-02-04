@@ -39,7 +39,7 @@ const useTransition = ( {targetValue, name, startValue }) => {
     return renderValue;
 };
 
-const Bar = ({ data, y, width, thickness, endLabel }) => {
+const Bar = ({ data, y, width, thickness, endLabel, color }) => {
   const renderWidth = useTransition({ 
     targetValue: width,
     name: `width-${data.name}`});
@@ -60,7 +60,7 @@ const Bar = ({ data, y, width, thickness, endLabel }) => {
 
   return (
     <g transform={`translate(${renderX}, ${renderY})`}>
-      <rect x={10} y={0} width={renderWidth} height={thickness} fill="white" />
+      <rect x={10} y={0} width={renderWidth} height={thickness} fill={color} />
       <Label y={thickness / 2}>{data.name}</Label>
       <EndLabel y={thickness / 2} x= {renderWidth + 15}>{ endLabel }</EndLabel>
     </g>
@@ -76,6 +76,17 @@ const Barchart = ({ data, x, y, barThickness, width }) => {
     .range([data.length * barThickness, 0]),
   [data.length, barThickness]
   );
+
+  const color = useMemo(() => d3
+    .scaleOrdinal()
+    .domain(["AMD", "ARM", "Apple", "Fujitsu", "Hitachi", 
+    "Huawei", "IBM", "Intel", "Microsoft/Amd", 
+    "Motorola", "NEC", "Nvidia", "Oracle", "Samsung", "Sun/Oracle", "Toshiba"])
+    .range([
+      '#009A66','#0091BD','#A3AAAE', '#d30909', '#F4ABAA',
+      '#FA0505', '#1F70C1','#0171C5','#7FBA02',
+      '#008DD2','#14149F','#77B900', '#F70000', '#034EA1','#7F7F7F','#FF0000'
+    ]))
 
   const xScale = d3
     .scaleLinear()
@@ -94,6 +105,7 @@ const Barchart = ({ data, x, y, barThickness, width }) => {
           width={xScale(d.transistors)}
           endLabel={formatter(d.transistors)}
           thickness={yScale.bandwidth()}
+          color={color(d.designer) || 'white'}
         />
       ))}
     </g>
